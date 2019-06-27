@@ -1,0 +1,32 @@
+# things to ignore
+.DS_Store
+venv
+data
+graph
+tokens
+*.out
+logs
+*ipyn*
+images
+__*
+# scala specific
+target/
+boot/
+lib_managed/
+src_managed/
+project/plugins/project/
+/.idea/
+/project/target/
+/src/main/g8/target/
+/project/project/
+
+*.class
+*.log
+
+# sbt specific
+.cache
+.history
+.lib/
+dist/*
+project/boot/
+*ini
