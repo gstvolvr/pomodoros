@@ -6,10 +6,13 @@ import configparser
 import os
 import time
 
-def query_storage_sync(config):
+def query_storage_sync():
     """
     query firefox's browser.storage.sync to pomodoro data from firefox "tomator clock" plugin
     """
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
     options = Options()
     options.headless = True
 
@@ -19,35 +22,37 @@ def query_storage_sync(config):
     url = config['pomodoros']['url']
     output_path = config['pomodoros']['output_path']
 
-    try:
-        driver.get(url)
+    # try:
+    print(f"fetching: {url}")
+    driver.get(url)
 
-        query = """
-            const getStorageData = key =>
-              new Promise((resolve, reject) =>
-                browser.storage.sync.get(key, result =>
-                  browser.runtime.lastError
-                    ? reject(Error(browser.runtime.lastError.message))
-                    : resolve(result)
-                )
-              )
+    time.sleep(0.5)
+    query = """
+        const getStorageData = key =>
+          new Promise((resolve, reject) =>
+            browser.storage.sync.get(key, result =>
+              browser.runtime.lastError
+                ? reject(Error(browser.runtime.lastError.message))
+                : resolve(result)
+            )
+          )
 
-            const timeline = getStorageData('timeline')
-            return timeline
-        """
+        const timeline = getStorageData('timeline')
+        return timeline
+    """
 
-        output = driver.execute_script(query.strip())
+    output = driver.execute_script(query.strip())
 
-        if not output:
-            print("results are empty!")
-            driver.quit()
-            return
+    if not output:
+        driver.quit()
+        raise ValueError("results are empty!")
+        return
 
     # yeah, I know
-    except Exception:
-        driver.quit()
-        raise
-        return
+    # except Exception error:
+    #     driver.quit()
+    #     raise
+    #     return
 
     elements = filter(lambda d: d['type'] == 'tomato', output['timeline'])
     days = defaultdict(int)
@@ -75,10 +80,7 @@ def query_storage_sync(config):
         print("something's up")
 
     driver.quit()
+    return
 
 if __name__ == '__main__':
-
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-
-    query_storage_sync(config)
+    query_storage_sync()
