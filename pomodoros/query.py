@@ -18,41 +18,37 @@ def query_storage_sync():
 
     profile = webdriver.FirefoxProfile(config['pomodoros']['profile_path'])
     driver = webdriver.Firefox(firefox_profile=profile, options=options)
+    driver.implicitly_wait(100)
 
-    url = config['pomodoros']['url']
-    output_path = config['pomodoros']['output_path']
+    try:
+        url = config['pomodoros']['url']
+        output_path = config['pomodoros']['output_path']
 
-    # try:
-    print(f"fetching: {url}")
-    driver.get(url)
+        driver.get(url)
 
-    time.sleep(0.5)
-    query = """
-        const getStorageData = key =>
-          new Promise((resolve, reject) =>
-            browser.storage.sync.get(key, result =>
-              browser.runtime.lastError
-                ? reject(Error(browser.runtime.lastError.message))
-                : resolve(result)
-            )
-          )
+        query = """
+            const getStorageData = key =>
+              new Promise((resolve, reject) =>
+                browser.storage.sync.get(key, result =>
+                  browser.runtime.lastError
+                    ? reject(Error(browser.runtime.lastError.message))
+                    : resolve(result)
+                )
+              )
 
-        const timeline = getStorageData('timeline')
-        return timeline
-    """
+            const timeline = getStorageData('timeline')
+            return timeline
+        """
 
-    output = driver.execute_script(query.strip())
+        output = driver.execute_script(query.strip())
 
-    if not output:
+        if not output:
+            driver.quit()
+            raise ValueError("results are empty!")
+            return
+    except Exception as e:
         driver.quit()
-        raise ValueError("results are empty!")
-        return
-
-    # yeah, I know
-    # except Exception error:
-    #     driver.quit()
-    #     raise
-    #     return
+        raise e
 
     elements = filter(lambda d: d['type'] == 'tomato', output['timeline'])
     days = defaultdict(int)
