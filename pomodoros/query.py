@@ -52,11 +52,14 @@ def query_storage_sync():
 
     elements = filter(lambda d: d['type'] == 'tomato', output['timeline'])
     days = defaultdict(int)
+    minutes = defaultdict(int)
 
     for element in elements:
         date_obj = datetime.strptime(element['date'], "%a %b %d %Y %H:%M:%S %Z%z (Eastern Daylight Time)")
-        day = datetime.strftime(date_obj, '%Y-%m-%d')
+        minute = datetime.strftime(date_obj, "%Y-%m-%d %H:%M")
+        day = datetime.strftime(date_obj, "%Y-%m-%d")
         days[day] += 1
+        minutes[minute] = days[day]
 
     override_output_path = False
     if not os.path.exists(output_path):
@@ -72,6 +75,13 @@ def query_storage_sync():
 
             for d, v in sorted(days.items()):
                 w.write(f"{d},{v}\n")
+
+        with open("all_pomodoros.bsv", "w") as w:
+            w.write("time,value\n")
+
+            for d, v in sorted(minutes.items()):
+                w.write(f"{d},{v}\n")
+
     else:
         print("something's up")
 
