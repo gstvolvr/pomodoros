@@ -1,4 +1,7 @@
-source conf/env.sh
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source ${DIR}/../conf/env.sh
+
 path=${1}
 
 git --git-dir=$path/.git --work-tree=$path status
