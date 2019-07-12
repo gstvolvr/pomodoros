@@ -1,0 +1,8 @@
+[pomodoros]
+profile_path = /path/to/firefox/profiles/profile-name
+url = moz-extension:/path/to/extension
+output_path = /gist/repo/local/path/filename
+
+[pipeline]
+email = email@email.com
+gist_repo = /gist/repo/local/path/
